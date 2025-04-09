@@ -4,10 +4,35 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
+  # New test job to run Go tests
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Install dependencies
+        run: go mod download
+
+      # ✅ TODO 01 - Step to run tests
+      - name: Run tests
+        run: go test ./...
+
+  # Compile job that depends on test job
   compile:
     runs-on: ubuntu-latest
+
+    # ✅ TODO 02 - Ensure this runs only after test is successful
+    needs: test
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,3 +47,4 @@ jobs:
 
       - name: Compile binary
         run: go build -o myapp
+
